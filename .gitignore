@@ -130,3 +130,10 @@ via*.json
 !/keyboards/zsa/**/keymaps/default/**
 !/keyboards/zsa/**/keymaps/oryx
 !/keyboards/zsa/**/keymaps/oryx/**
+!/keyboards/zsa/**/keymaps/arathunku
+!/keyboards/zsa/**/keymaps/arathunku/**
+!/keyboards/zsa/**/keymaps/arathunku-oryx
+!/keyboards/zsa/**/keymaps/arathunku-oryx/**
+/keyboards/zsa/**/keymaps/arathunku-oryx/*.bin
+/keyboards/zsa/**/keymaps/arathunku-oryx/*.md5
+/keyboards/zsa/**/keymaps/arathunku-oryx/build.log

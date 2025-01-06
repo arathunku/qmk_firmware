@@ -1,0 +1,50 @@
+/*
+  Set any config.h overrides for your specific keymap here.
+  See config.h options at https://docs.qmk.fm/#/config_options?id=the-configh-file
+*/
+
+#undef DEBOUNCE
+#define DEBOUNCE 7
+
+#undef TAPPING_TERM
+#define TAPPING_TERM 155
+
+#define RETRO_TAPPING
+
+#define ONESHOT_TAP_TOGGLE 1
+
+#undef ONESHOT_TIMEOUT
+#define ONESHOT_TIMEOUT 1206
+
+#define PERMISSIVE_HOLD
+
+#undef RGB_MATRIX_TIMEOUT
+#define RGB_MATRIX_TIMEOUT 120000
+
+#define USB_SUSPEND_WAKEUP_DELAY 5
+#undef MOUSEKEY_INTERVAL
+#define MOUSEKEY_INTERVAL 15
+
+#undef MOUSEKEY_DELAY
+#define MOUSEKEY_DELAY 5
+
+#undef MOUSEKEY_MAX_SPEED
+#define MOUSEKEY_MAX_SPEED 3
+
+#undef MOUSEKEY_TIME_TO_MAX
+#define MOUSEKEY_TIME_TO_MAX 35
+
+#undef MOUSEKEY_WHEEL_INTERVAL
+#define MOUSEKEY_WHEEL_INTERVAL 80
+
+#undef MOUSEKEY_WHEEL_MAX_SPEED
+#define MOUSEKEY_WHEEL_MAX_SPEED 5
+
+#undef MOUSEKEY_WHEEL_TIME_TO_MAX
+#define MOUSEKEY_WHEEL_TIME_TO_MAX 80
+
+#define SERIAL_NUMBER "AbjNG/gW3p7"
+#define LAYER_STATE_16BIT
+
+#define RGB_MATRIX_STARTUP_SPD 60
+
