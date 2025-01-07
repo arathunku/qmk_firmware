@@ -6,11 +6,10 @@ moonlander name="arathunku":
     #!nix-shell -i bash
 
     qmk setup zsa/qmk_firmware -b firmware24
-    make "zsa/moonlander:{{name}}"
-    just maybe-flash "moonlander_{{name}}"
+    make "zsa/moonlander:{{name}}" && just maybe-flash "zsa_moonlander_{{name}}"
 
 [confirm('Flash keyboard? Requires clicking reset. Y/n')]
-maybe-flash binname="moonlander_arathunku":
+maybe-flash binname="zsa_moonlander_arathunku":
     wally-cli ./{{binname}}.bin
     ~/bin/keyboard
 

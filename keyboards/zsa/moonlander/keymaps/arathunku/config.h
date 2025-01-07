@@ -4,7 +4,7 @@
 */
 
 #undef DEBOUNCE
-#define DEBOUNCE 7
+#define DEBOUNCE 5
 
 #undef TAPPING_TERM
 #define TAPPING_TERM 155
@@ -48,3 +48,5 @@
 
 #define RGB_MATRIX_STARTUP_SPD 60
 
+#define LEADER_TIMEOUT 250
+#define LEADER_NO_TIMEOUT
