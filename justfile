@@ -11,6 +11,7 @@ moonlander name="arathunku":
 [confirm('Flash keyboard? Requires clicking reset. Y/n')]
 maybe-flash binname="zsa_moonlander_arathunku":
     wally-cli ./{{binname}}.bin
+    sleep 10 # time for booting
     ~/bin/keyboard
 
 unpack-latest zip:
