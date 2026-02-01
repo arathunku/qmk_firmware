@@ -134,6 +134,8 @@ via*.json
 !/keyboards/zsa/**/keymaps/oryx
 !/keyboards/zsa/**/keymaps/oryx/**
 !/keyboards/zsa/**/keymaps/arathunku
+!/keyboards/zsa/**/keymaps/arathoryxnative/*
+!/keyboards/zsa/**/keymaps/arathoryxnative
 !/keyboards/zsa/**/keymaps/arathunku/**
 !/keyboards/zsa/**/keymaps/arathunku-oryx
 !/keyboards/zsa/**/keymaps/arathunku-oryx/**
