@@ -49,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,                                          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,
     KC_NO,          TO(0),          DUAL_FUNC_1,    KC_NO,          KC_NO,          KC_NO,          KC_NO,                                          KC_NO,          KC_NO,          KC_HOME,        KC_UP,          KC_END,         KC_DELETE,      KC_NO,
     KC_NO,          OSM(MOD_LSFT),  OSM(MOD_LGUI),  OSM(MOD_LALT),  OSM(MOD_LCTL),  KC_TAB,         KC_NO,                                                                          KC_NO,          KC_NO,          KC_LEFT,        KC_DOWN,        KC_RIGHT,       KC_BSPC,        KC_NO,
-    KC_NO,          KC_PSCR,        KC_F22,         TD(DANCE_2),    KC_ESCAPE,      LSFT(KC_TAB),                                   KC_NO,          KC_PAGE_UP,     KC_PGDN,        KC_NO,          KC_ENTER,       KC_NO,
+    KC_NO,          KC_PSCR,        /*KC_F22*/QK_LEAD,         TD(DANCE_2),    KC_ESCAPE,      LSFT(KC_TAB),                                   KC_NO,          KC_PAGE_UP,     KC_PGDN,        KC_NO,          KC_ENTER,       KC_NO,
     KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,                                                                                                          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,          KC_NO,
     KC_NO,          KC_NO,          KC_NO,                          KC_NO,          MO(5),          KC_NO
   ),
@@ -85,7 +85,7 @@ const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM = LAYOUT(
   'L', 'L', 'L', 'L', 'L', 'L', 'L', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
   'L', 'L', 'L', 'L', 'L', 'L', 'R', 'R', 'R', 'R', 'R', 'R',
   'L', 'L', 'L', 'L', 'L', '*', '*', 'R', 'R', 'R', 'R', 'R',
-                 '*', '*', '*', '*', '*', '*'
+                 'L', '*', '*', '*', '*', '*'
 );
 
 
@@ -375,3 +375,54 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 }
 
+
+// Customization
+// https://github.com/qmk/qmk_firmware/issues/22566
+// fix OSM across layers
+void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (IS_QK_ONE_SHOT_MOD(keycode) && is_oneshot_layer_active() && record->event.pressed) {
+        clear_oneshot_layer_state(ONESHOT_OTHER_KEY_PRESSED);
+    }
+    return;
+}
+
+#ifdef HOLD_ON_OTHER_KEY_PRESS_PER_KEY
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LT(SYM,KC_SPACE):
+            return true;
+        default:
+            return false;
+    }
+}
+#endif
+
+
+
+// QK_LEAD key activeates it
+void leader_start_user(void) {
+    // Do something when the leader key is pressed
+}
+
+void leader_end_user(void) {
+    // TYPE
+    if (leader_sequence_three_keys(KC_T, KC_E, KC_E)) { SEND_STRING(SS_LGUI("e")); }
+    // TYPE LINK
+    else if (leader_sequence_two_keys(KC_T, KC_L)) { SEND_STRING("[]()" SS_TAP(X_LEFT) SS_TAP(X_LEFT) SS_TAP(X_LEFT)); }
+    // AI chat app
+    else if (leader_sequence_two_keys(KC_A, KC_C)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("c"))))); }
+    // terminal
+    else if (leader_sequence_two_keys(KC_A, KC_T)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("t"))))); }
+    // TODO
+    else if (leader_sequence_two_keys(KC_A, KC_S)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("s"))))); }
+    // notes
+    else if (leader_sequence_two_keys(KC_A, KC_N)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("n"))))); }
+    // files
+    else if (leader_sequence_two_keys(KC_A, KC_F)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("f"))))); }
+    // music
+    else if (leader_sequence_two_keys(KC_A, KC_S)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("m"))))); }
+    // browser
+    else if (leader_sequence_two_keys(KC_A, KC_B)) { SEND_STRING(SS_LGUI(SS_LCTL(SS_LSFT(SS_LALT("b"))))); }
+    // alt+tab
+    else if (leader_sequence_two_keys(KC_A, KC_A)) { SEND_STRING(SS_LALT(SS_TAP(X_TAB))); }
+}
