@@ -16,11 +16,31 @@
 
 #pragma once
 
+#include "compiler_support.h"
+
 // Prefix string literal with L for descriptors
 #define USBCONCAT(a, b) a##b
 #define USBSTR(s) USBCONCAT(L, s)
 
 #define HID_VALUE_16(v) ((uint8_t)(v & 0xFF)), ((uint8_t)(v >> 8))
+
+/////////////////////
+// System Control usage range
+//
+// Keep this below the Generic Desktop D-pad usages (0x90 and up). If the range
+// reaches them, hosts like Steam see the D-pad and treat the keyboard as a gamepad.
+//
+// Keep the minimum at 0x01: Windows' HID system-button handling ignores the
+// System Sleep/Power/Wake usages when the array's Logical/Usage Minimum starts
+// at 0x81 (the raw report is identical, only the descriptor range differs).
+
+#ifndef SYSTEM_CONTROL_USAGE_MINIMUM
+#    define SYSTEM_CONTROL_USAGE_MINIMUM 0x0001 // Pointer
+#endif
+#ifndef SYSTEM_CONTROL_USAGE_MAXIMUM
+#    define SYSTEM_CONTROL_USAGE_MAXIMUM 0x008F // System Warm Restart
+#endif
+STATIC_ASSERT(SYSTEM_CONTROL_USAGE_MINIMUM <= SYSTEM_CONTROL_USAGE_MAXIMUM, "SYSTEM_CONTROL_USAGE_MINIMUM must not be greater than SYSTEM_CONTROL_USAGE_MAXIMUM");
 
 /////////////////////
 // RAW Usage page and ID configuration
@@ -31,6 +51,17 @@
 
 #ifndef RAW_USAGE_ID
 #    define RAW_USAGE_ID 0x61
+#endif
+
+/////////////////////
+// macOS Scroll Resolution (units per inch)
+// Lower value = more sensitive scrolling (default: 200 for 2x Apple sensitivity)
+// Apple trackpads use 400, but smaller trackpads need lower values
+
+#ifdef POINTING_DEVICE_MACOS_SCROLL_RESOLUTION
+#    ifndef POINTING_DEVICE_MACOS_SCROLL_UNITS_PER_INCH
+#        define POINTING_DEVICE_MACOS_SCROLL_UNITS_PER_INCH 200
+#    endif
 #endif
 
 /////////////////////
