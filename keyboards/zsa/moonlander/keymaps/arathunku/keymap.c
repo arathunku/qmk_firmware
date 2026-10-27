@@ -72,42 +72,48 @@ bool arath_process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case ONESHOT_SHIFT:
         oneshot_modifier(&shift_state, record);
-        break;
+        return false;
     case ONESHOT_META:
         oneshot_modifier(&meta_state, record);
-        break;
+        return false;
     case ONESHOT_ALT:
         oneshot_modifier(&alt_state, record);
-        break;
+        return false;
     case ONESHOT_CTL:
         oneshot_modifier(&ctl_state, record);
-        break;
+        return false;
     case ONESHOT_SHIFT_CTL:
         oneshot_modifier(&ctl_state, record);
         oneshot_modifier(&shift_state, record);
-        break;
+        return false;
     case LT(SYM,KC_SPACE):
-        if (record->tap.count == 1) {           // On hold.
-            if (!record->event.pressed && record->tap.interrupted) {
-                    // layer on
-            } else {
-              handle_oneshot_modifier(&ctl_state, record);
-              handle_oneshot_modifier(&meta_state, record);
-              handle_oneshot_modifier(&alt_state, record);
-              handle_oneshot_modifier(&shift_state, record);
-            }
-        } else {
-              if (record->event.pressed) {
-                  handle_oneshot_modifier(&ctl_state, record);
-                  handle_oneshot_modifier(&meta_state, record);
-                  handle_oneshot_modifier(&alt_state, record);
-                  handle_oneshot_modifier(&shift_state, record);
-              }
-        };
+        if (record->tap.count > 0) {
+            handle_oneshot_modifier(&ctl_state, record);
+            handle_oneshot_modifier(&meta_state, record);
+            handle_oneshot_modifier(&alt_state, record);
+            handle_oneshot_modifier(&shift_state, record);
+        }
         break;
+    case TD(DANCE_ENTR_SPACE):
+    case TD(DANCE_CTRL_META):
     case KC_NAV:
     case KC_NUML:
     case KC_SYM:
+    case MO(VIS):
+    case MO(FUN):
+    case TO(0):
+    case TO(1):
+    case TO(2):
+    case CW_TOGG:
+    case QK_LEAD:
+    case QK_REPEAT_KEY:
+    case RGB_SLD:
+    case RGB_VAD:
+    case RGB_VAI:
+    case RGB_HUD:
+    case RGB_HUI:
+    case TOGGLE_LAYER_COLOR:
+    case MOON_LED_LEVEL:
         break;
     default:
       handle_oneshot_modifier(&alt_state, record);
@@ -270,8 +276,26 @@ bool rgb_matrix_indicators_user(void) {
   return true;
 }
 
+#ifdef REPEAT_KEY_ENABLE
+bool remember_last_key_user(uint16_t keycode, keyrecord_t *record, uint8_t *remembered_mods) {
+  (void)record;
+  (void)remembered_mods;
+  switch (keycode) {
+    case ONESHOT_SHIFT:
+    case ONESHOT_META:
+    case ONESHOT_ALT:
+    case ONESHOT_CTL:
+    case ONESHOT_SHIFT_CTL:
+      return false;
+  }
+  return true;
+}
+#endif
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  arath_process_record_user(keycode, record);
+  if (!arath_process_record_user(keycode, record)) {
+    return false;
+  }
 
   switch (keycode) {
     case ST_MACRO_COMPOSE:
@@ -341,6 +365,18 @@ void on_dance_entr_space(tap_dance_state_t *state, void *user_data) {
 void dance_entr_space_finished(tap_dance_state_t *state, void *user_data) {
     dance_state[DANCE_ENTR_SPACE_STATE].step = dance_step(state);
     switch (dance_state[DANCE_ENTR_SPACE_STATE].step) {
+        case SINGLE_TAP:
+        case DOUBLE_TAP:
+        case DOUBLE_SINGLE_TAP: {
+            keyrecord_t press_record = { .event = { .pressed = true } };
+            handle_oneshot_modifier(&alt_state, &press_record);
+            handle_oneshot_modifier(&meta_state, &press_record);
+            handle_oneshot_modifier(&ctl_state, &press_record);
+            handle_oneshot_modifier(&shift_state, &press_record);
+            break;
+        }
+    }
+    switch (dance_state[DANCE_ENTR_SPACE_STATE].step) {
         case SINGLE_TAP: register_code16(KC_SPACE); break;
         case DOUBLE_TAP: register_code16(KC_ENTER); break;
         case DOUBLE_SINGLE_TAP: tap_code16(KC_SPACE); register_code16(KC_SPACE);
@@ -354,6 +390,18 @@ void dance_entr_space_reset(tap_dance_state_t *state, void *user_data) {
         case DOUBLE_TAP: unregister_code16(KC_ENTER); break;
         case DOUBLE_SINGLE_TAP: unregister_code16(KC_SPACE); break;
     }
+    switch (dance_state[DANCE_ENTR_SPACE_STATE].step) {
+        case SINGLE_TAP:
+        case DOUBLE_TAP:
+        case DOUBLE_SINGLE_TAP: {
+            keyrecord_t release_record = { .event = { .pressed = false } };
+            handle_oneshot_modifier(&alt_state, &release_record);
+            handle_oneshot_modifier(&meta_state, &release_record);
+            handle_oneshot_modifier(&ctl_state, &release_record);
+            handle_oneshot_modifier(&shift_state, &release_record);
+            break;
+        }
+    }
     dance_state[DANCE_ENTR_SPACE_STATE].step = 0;
 }
 
@@ -361,8 +409,8 @@ void dance_ctrl_meta_finished(tap_dance_state_t *state, void *user_data);
 void dance_ctrl_meta_reset(tap_dance_state_t *state, void *user_data);
 
 void dance_ctrl_meta_finished(tap_dance_state_t *state, void *user_data) {
-    dance_state[0].step = dance_step(state);
-    switch (dance_state[0].step) {
+    dance_state[1].step = dance_step(state);
+    switch (dance_state[1].step) {
         case SINGLE_HOLD: register_code16(KC_LEFT_CTRL); break;
         case DOUBLE_HOLD: register_code16(KC_LEFT_GUI); break;
     }
@@ -370,11 +418,11 @@ void dance_ctrl_meta_finished(tap_dance_state_t *state, void *user_data) {
 
 void dance_ctrl_meta_reset(tap_dance_state_t *state, void *user_data) {
     wait_ms(10);
-    switch (dance_state[0].step) {
+    switch (dance_state[1].step) {
         case SINGLE_HOLD: unregister_code16(KC_LEFT_CTRL); break;
         case DOUBLE_HOLD: unregister_code16(KC_LEFT_GUI); break;
     }
-    dance_state[0].step = 0;
+    dance_state[1].step = 0;
 }
 
 tap_dance_action_t tap_dance_actions[] = {
